@@ -426,7 +426,7 @@ each priority the newest items would appear first."
     ;; Sort items
     (pcase sort
       (`nil items)
-      ((guard (cl-subsetp (-list sort) '(date deadline scheduled todo priority random reverse)))
+      ((guard (cl-subsetp (-list sort) '(date deadline scheduled todo priority random reverse year)))
        ;; Default sorting functions
        (org-ql--sort-by items (-list sort)))
       ;; Sort by user-given comparator.
@@ -2175,6 +2175,7 @@ PREDICATES is a list of one or more sorting methods, including:
                        ;; TODO: Rename `date' to `planning'.  `date' should be something else.
                        ('date #'org-ql--date<)
                        ('priority #'org-ql--priority<)
+                       ('year #'org-ql--year<)
                        ('random (lambda (&rest _ignore)
                                   (= 0 (random 2))))
                        ;; NOTE: reverse and todo are handled below.
@@ -2230,6 +2231,19 @@ A and B are Org timestamp elements."
              (string< a-ts b-ts))
             (a-ts t)
             (b-ts nil)))))
+
+(defun org-ql--year< (a b)
+  "Return non-nil if A's year is smaller than B's.
+A and B are Org headline elements."
+  (cl-macrolet ((year (item)
+                          `(org-element-property :YEAR ,item)))
+    ;; NOTE: Priorities are numbers in Org elements.  This might differ from the year selector logic.
+    (let ((a-year (year a))
+          (b-year (year b)))
+      (cond ((and a-year b-year)
+             (string< a-year b-year))
+            (a-year t)
+            (b-year nil)))))
 
 (defun org-ql--priority< (a b)
   "Return non-nil if A's priority is higher than B's.

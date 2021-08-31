@@ -1113,7 +1113,8 @@ The counterpart to `org-ql-view--contract-buffers-files'."
                                                      "random"
                                                      "reverse"
                                                      "scheduled"
-                                                     "todo")
+                                                     "todo"
+                                                     "year")
                                                nil nil (when org-ql-view-sort
                                                          (prin1-to-string org-ql-view-sort)))
                   (--remove (equal "buffer-order" it)))))
